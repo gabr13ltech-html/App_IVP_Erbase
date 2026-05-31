@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVP — Índice de Valor Paisagístico</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">🌳</span>
+    <div>
+      <span class="logo-text">IVP</span>
+      <span class="logo-sub">Sophia Polis</span>
+    </div>
+  </div>
+  <nav>
+    <button class="active" onclick="showSection('home')">Início</button>
+    <button onclick="showSection('identificar')">Identificar Espécie</button>
+    <button onclick="showSection('calcular')">Calcular IVP</button>
+    <button onclick="showSection('sobre')">O que é IVP?</button>
+  </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SEÇÃO: HOME                                   -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="home" class="section active">
+  <div class="hero">
+    <div class="badge-sophia">🔬 Núcleo de Pesquisa Sophia Polis</div>
+    <h1>Índice de Valor<br><em>Paisagístico</em></h1>
+    <p>Ferramenta digital para avaliação e catalogação de indivíduos arbóreos usando o método IVP.</p>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card" style="cursor:pointer" onclick="showSection('identificar')">
+      <span class="card-icon">🔍</span>
+      <h3>Identificar Espécie</h3>
+      <p>Fotografe uma árvore e nossa IA identifica a espécie com informações sobre origem, família botânica e características.</p>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('calcular')">
+      <span class="card-icon">📊</span>
+      <h3>Calcular IVP</h3>
+      <p>Insira os parâmetros do indivíduo arbóreo e obtenha o Índice de Valor Paisagístico com classificação e recomendações.</p>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('sobre')">
+      <span class="card-icon">📖</span>
+      <h3>Entender o IVP</h3>
+      <p>Aprenda o que é o método IVP, seus critérios de avaliação, escala de classificação e como aplicar em field.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SEÇÃO: IDENTIFICAR                            -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="identificar" class="section">
+  <div class="container">
+    <h2 class="section-title">🔍 Identificar Espécie</h2>
+    <p class="section-subtitle">Envie uma foto da árvore (folhas, tronco ou copa) e o sistema retornará as espécies mais prováveis com nível de confiança.</p>
+
+
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+      <span class="upload-icon">📷</span>
+      <p><strong>Clique para selecionar</strong> ou arraste uma foto aqui</p>
+      <p style="margin-top:.4rem;font-size:.8rem;">JPG, PNG ou WEBP · max 10 MB</p>
+    </div>
+
+    <img id="previewImg" class="preview-img" style="display:none" alt="Prévia da imagem">
+
+    <div style="margin-top:1.25rem;display:flex;gap:.75rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="btnIdentificar" onclick="identificar()" disabled>
+        🔬 Identificar Espécie
+      </button>
+      <button class="btn btn-outline" onclick="limparIdentificacao()">✕ Limpar</button>
+    </div>
+
+    <div id="loadingId" class="loading" style="display:none">
+      <div class="spinner"></div>
+      Analisando imagem…
+    </div>
+
+    <div id="resultado-identificacao"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SEÇÃO: CALCULAR IVP                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="calcular" class="section">
+  <div class="container">
+    <h2 class="section-title">📊 Calcular IVP</h2>
+    <p class="section-subtitle">Preencha os parâmetros observados em campo. O IVP é calculado com base em 8 critérios do método brasileiro.</p>
+
+    <form class="ivp-form" onsubmit="event.preventDefault(); calcularIVP()">
+
+      <!-- Fitossanidade -->
+      <div class="form-group">
+        <label>1. Condição Fitossanitária <span class="hint">— estado geral de saúde da planta</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="fitossanidade" value="otima" checked> 🟢 Ótima</label>
+          <label><input type="radio" name="fitossanidade" value="boa"> 🟡 Boa</label>
+          <label><input type="radio" name="fitossanidade" value="ruim"> 🔴 Ruim</label>
+        </div>
+      </div>
+
+      <!-- Injúrias Mecânicas -->
+      <div class="form-group">
+        <label>2. Injúrias Mecânicas <span class="hint">— danos físicos no tronco/galhos</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="injurias" value="sem" checked> ✅ Sem injúrias</label>
+          <label><input type="radio" name="injurias" value="leves"> ⚠️ Leves</label>
+          <label><input type="radio" name="injurias" value="graves"> ❌ Graves</label>
+        </div>
+      </div>
+
+      <!-- Conflitos com Infraestrutura -->
+      <div class="form-group">
+        <label>3. Conflito com Infraestrutura <span class="hint">— fiação, calçadas, edificações</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="conflitos" value="sem" checked> ✅ Sem conflito</label>
+          <label><input type="radio" name="conflitos" value="moderado"> ⚠️ Moderado</label>
+          <label><input type="radio" name="conflitos" value="grave"> ❌ Grave</label>
+        </div>
+      </div>
+
+      <!-- Origem -->
+      <div class="form-group">
+        <label>4. Origem da Espécie</label>
+        <div class="radio-group">
+          <label><input type="radio" name="origem" value="nativa" checked> 🌿 Nativa</label>
+          <label><input type="radio" name="origem" value="exotica_adaptada"> 🌱 Exótica adaptada</label>
+          <label><input type="radio" name="origem" value="exotica"> 🌐 Exótica</label>
+        </div>
+      </div>
+
+      <!-- Valor Paisagístico -->
+      <div class="form-group">
+        <label>5. Valor Paisagístico Subjetivo <span class="hint">— beleza, identidade visual</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="paisagistico" value="alto"> 🌸 Alto</label>
+          <label><input type="radio" name="paisagistico" value="medio" checked> 🌿 Médio</label>
+          <label><input type="radio" name="paisagistico" value="baixo"> 🍂 Baixo</label>
+        </div>
+      </div>
+
+      <!-- Medidas numéricas -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>6. Altura total <span class="hint">(metros)</span></label>
+          <input type="number" id="altura" value="6" min="0.5" max="60" step="0.5">
+        </div>
+        <div class="form-group">
+          <label>7. DAP <span class="hint">(cm) — diâmetro à 1,3 m do solo</span></label>
+          <input type="number" id="dap" value="25" min="1" max="300" step="1">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>8. Área de Copa <span class="hint">(m²)</span></label>
+          <input type="number" id="copa" value="15" min="0.5" max="500" step="0.5">
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end">
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+            🌳 Calcular IVP
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <div id="resultado-ivp"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SEÇÃO: SOBRE O IVP                           -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="sobre" class="section">
+  <div class="ivp-content">
+    <h2>O que é o IVP?</h2>
+    <p>O <strong>Índice de Valor Paisagístico (IVP)</strong> é um método brasileiro de avaliação qualitativa de indivíduos arbóreos em espaços urbanos. Desenvolvido para sistematizar o diagnóstico da arborização, o IVP atribui notas a critérios predefinidos e gera um índice final que orienta ações de manejo, preservação ou substituição.</p>
+
+    <p>O método é amplamente utilizado por pesquisadores, técnicos municipais e gestores urbanos no Brasil, especialmente no Nordeste, onde a especificidade climática e florística exige adaptações ao método original.</p>
+
+    <h3>🧪 Critérios de Avaliação</h3>
+    <p>Cada critério recebe nota de 1 a 3, sendo 3 a condição mais favorável:</p>
+
+    <div class="criterios-grid">
+      <div class="criterio-card">
+        <h4>🌿 Condição Fitossanitária</h4>
+        <p>Avalia o estado geral de saúde: presença de pragas, doenças, fungos ou seca de ponteiros.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>💪 Injúrias Mecânicas</h4>
+        <p>Danos físicos no tronco, galhos ou raízes causados por vandalismo, podas drásticas ou acidentes.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>⚡ Conflitos com Infraestrutura</h4>
+        <p>Interferência com fiação elétrica, calçadas, muros, edificações e redes subterrâneas.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>☀️ Área de Copa</h4>
+        <p>Projeção horizontal da copa em m². Copas maiores indicam maior cobertura e benefícios ambientais.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>📏 Altura Total</h4>
+        <p>Altura do indivíduo do solo ao ápice. Relaciona-se ao porte da espécie e ao estágio de desenvolvimento.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>🪵 DAP</h4>
+        <p>Diâmetro à Altura do Peito (1,30 m do solo). Indicador de biomassa e longevidade do indivíduo.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>🌍 Origem da Espécie</h4>
+        <p>Espécies nativas recebem maior nota, pois são adaptadas ao bioma local e favorecem a fauna nativa.</p>
+      </div>
+      <div class="criterio-card">
+        <h4>🎨 Valor Paisagístico</h4>
+        <p>Apreciação subjetiva da beleza, floração, identidade cultural e contribuição visual ao espaço urbano.</p>
+      </div>
+    </div>
+
+    <h3>📈 Escala de Classificação</h3>
+    <div class="escala-ivp">
+      <div class="escala-item"><span class="escala-dot" style="background:#22c55e"></span> 80–100% — Excelente</div>
+      <div class="escala-item"><span class="escala-dot" style="background:#84cc16"></span> 60–79% — Bom</div>
+      <div class="escala-item"><span class="escala-dot" style="background:#eab308"></span> 40–59% — Regular</div>
+      <div class="escala-item"><span class="escala-dot" style="background:#ef4444"></span> 0–39% — Crítico</div>
+    </div>
+
+    <h3>📋 Como Levantar o IVP em Campo</h3>
+    <p><strong>1. Identificação:</strong> Registre nome popular, científico, local (GPS) e data da avaliação.</p>
+    <p><strong>2. Fitossanidade:</strong> Observe folhas, tronco e galhos. Verifique sinais de pragas, fungos e galhas.</p>
+    <p><strong>3. Injúrias:</strong> Avalie danos físicos visíveis no tronco e sistema radicular exposto.</p>
+    <p><strong>4. Medições:</strong> Use hipsômetro ou método de sombra para altura; trena para DAP e raio de copa.</p>
+    <p><strong>5. Infraestrutura:</strong> Note se há conflito com fiação, calçada ou edificações próximas.</p>
+    <p><strong>6. Cálculo:</strong> Some as notas de todos os critérios e divida pelo máximo possível. Multiplique por 100.</p>
+
+    <h3>📚 Referências</h3>
+    <p>GREY, G. W.; DENEKE, F. J. <em>Urban forestry</em>. New York: John Wiley, 1978.<br>
+    SILVA FILHO, D. F. et al. Banco de dados relacional para cadastro, avaliação e manejo da arborização em vias públicas. <em>Revista Árvore</em>, v.26, n.5, p.629-642, 2002.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────── -->
+<footer>
+  🌳 IVP Tool · Núcleo Sophia Polis · IFS-Campus Lagarto · ERBASE 2025 |
+  <a href="https://github.com" target="_blank">GitHub</a>
+</footer>
+
+<script>
+const API = 'http://localhost:5000';
+let imagemBase64 = null;
+
+// ── NAVEGAÇÃO ──────────────────────────────────
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach((b, i) => {
+    b.classList.toggle('active', ['home','identificar','calcular','sobre'][i] === id);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── UPLOAD DE IMAGEM ───────────────────────────
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    imagemBase64 = ev.target.result.split(',')[1];
+    const img = document.getElementById('previewImg');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+    document.getElementById('btnIdentificar').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag & Drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const fakeEvent = { target: { files: [file] } };
+    handleFile(fakeEvent);
+  }
+});
+
+function limparIdentificacao() {
+  imagemBase64 = null;
+  document.getElementById('previewImg').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('btnIdentificar').disabled = true;
+  document.getElementById('resultado-identificacao').innerHTML = '';
+}
+
+// ── IDENTIFICAR ESPÉCIE ────────────────────────
+async function identificar() {
+  if (!imagemBase64) return;
+  const loading = document.getElementById('loadingId');
+  const resultado = document.getElementById('resultado-identificacao');
+  loading.style.display = 'flex';
+  resultado.innerHTML = '';
+
+  try {
+    const res = await fetch(`${API}/api/identificar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imagem: imagemBase64 })
+    });
+    const data = await res.json();
+    loading.style.display = 'none';
+
+    if (!data.sucesso) throw new Error(data.erro);
+
+    let html = `<h3 style="font-family:'Playfair Display',serif;color:var(--verde);margin-bottom:1rem">
+      Espécies identificadas <small style="font-size:.75rem;color:var(--muted);font-family:'DM Mono',monospace">(top ${data.resultados.length})</small>
+    </h3>`;
+
+    data.resultados.forEach((esp, i) => {
+      const confClass = esp.confianca >= 60 ? 'alta' : esp.confianca >= 35 ? 'media' : 'baixa';
+      html += `
+        <div class="especie-card" style="animation-delay:${i * .08}s">
+          <span class="especie-dot" style="background:${esp.cor}"></span>
+          <div class="especie-info">
+            <h4>${esp.nome_popular}</h4>
+            <small>${esp.nome_cientifico} · ${esp.familia} · ${esp.origem}</small>
+            <p>${esp.descricao}</p>
+          </div>
+          <span class="confianca-badge confianca-${confClass}">${esp.confianca}%</span>
+        </div>`;
+    });
+
+    html += `<p style="font-size:.78rem;color:var(--muted);margin-top:.75rem">
+      💡 Quer usar esta espécie no cálculo?
+      <button class="btn btn-outline" style="padding:.35rem .9rem;font-size:.8rem;margin-left:.5rem"
+        onclick="showSection('calcular')">Ir para Calculadora →</button>
+    </p>`;
+
+    resultado.innerHTML = html;
+  } catch (err) {
+    loading.style.display = 'none';
+    resultado.innerHTML = `<div style="color:var(--danger);padding:1rem;background:#fee2e2;border-radius:8px;font-size:.88rem">
+      ❌ Erro ao conectar com o backend. Certifique-se que o servidor Flask está rodando em localhost:5000.<br>
+      <code style="font-size:.78rem">${err.message}</code>
+    </div>`;
+  }
+}
+
+// ── CALCULAR IVP ───────────────────────────────
+async function calcularIVP() {
+  const dados = {
+    fitossanidade: document.querySelector('input[name="fitossanidade"]:checked').value,
+    injurias:      document.querySelector('input[name="injurias"]:checked').value,
+    conflitos:     document.querySelector('input[name="conflitos"]:checked').value,
+    origem:        document.querySelector('input[name="origem"]:checked').value,
+    paisagistico:  document.querySelector('input[name="paisagistico"]:checked').value,
+    altura:        document.getElementById('altura').value,
+    dap:           document.getElementById('dap').value,
+    copa:          document.getElementById('copa').value,
+  };
+
+  const div = document.getElementById('resultado-ivp');
+  div.style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/api/calcular-ivp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+    const data = await res.json();
+    if (!data.sucesso) throw new Error(data.erro);
+    const r = data.resultado;
+
+    const labels = {
+      fitossanidade: 'Fitossanidade',
+      injurias:      'Injúrias',
+      conflitos:     'Conflitos',
+      copa:          'Copa',
+      altura:        'Altura',
+      dap:           'DAP',
+      origem:        'Origem',
+      paisagistico:  'Paisagístico'
+    };
+
+    let detalhes = Object.entries(r.scores).map(([k, v]) => `
+      <div class="detalhe-item">
+        <div class="d-label">${labels[k]||k}</div>
+        <div class="d-val" style="color:${v===3?'var(--success)':v===2?'var(--warning)':'var(--danger)'}">${v}/3</div>
+      </div>`).join('');
+
+    div.innerHTML = `
+      <div class="ivp-score">
+        <div class="ivp-circle" style="color:${r.cor}">
+          <span class="ivp-num" style="color:${r.cor}">${r.ivp_percentual}%</span>
+          <span class="ivp-label">IVP</span>
+        </div>
+        <div class="ivp-classificacao" style="color:${r.cor}">${r.classificacao}</div>
+        <p class="ivp-recomendacao">${r.recomendacao}</p>
+      </div>
+      <div class="ivp-detalhes">${detalhes}</div>
+      <div style="margin-top:1.25rem;text-align:center;font-size:.8rem;color:var(--muted)">
+        Pontuação total: <strong>${r.total}/${r.maximo}</strong> pontos
+      </div>`;
+
+    div.style.display = 'block';
+    div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (err) {
+    div.innerHTML = `<div style="color:var(--danger);padding:1rem;background:#fee2e2;border-radius:8px;font-size:.88rem">
+      ❌ Erro ao conectar com o backend.<br><code>${err.message}</code>
+    </div>`;
+    div.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
