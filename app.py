@@ -3,7 +3,7 @@ IVP - Índice de Valor Paisagístico
 Backend Flask - Sophia Polis
 """
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import base64
 import os
@@ -20,7 +20,7 @@ PLANTNET_API_KEY = os.getenv("PLANTNET_API_KEY")
 
 print("Chave encontrada:", bool(PLANTNET_API_KEY))
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=".")
 CORS(app)
 
 # ─────────────────────────────────────────────
@@ -279,6 +279,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/style.css")
+def style_css():
+    return send_from_directory(app.root_path, "style.css")
+
+
 @app.route("/api/identificar", methods=["POST"])
 def identificar():
     """Recebe imagem em base64 e retorna espécies identificadas."""
@@ -314,11 +319,11 @@ def listar_especies():
 
 
 if __name__ == "__main__":
-    print("\n" + "═"*50)
-    print("  🌳 IVP - Índice de Valor Paisagístico")
-    print("  Sophia Polis · IFS-Campus Lagarto")
-    print("═"*50)
+    print("\n" + "="*50)
+    print("  IVP - Indice de Valor Paisagistico")
+    print("  Sophia Polis - IFS-Campus Lagarto")
+    print("="*50)
     print("  Servidor rodando em: http://localhost:5000")
     print("  Pressione Ctrl+C para encerrar")
-    print("═"*50 + "\n")
+    print("="*50 + "\n")
     app.run(debug=True, port=5000)
